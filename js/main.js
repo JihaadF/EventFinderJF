@@ -5,10 +5,11 @@
 // *** Your Ticketmaster key ***
 const API_KEY = 'BO3LQawkhLaYBn2gG9Fvrg5EcYZ2RFmE';
 
-// --- Supabase setup ---
+// --- Supabase setup (using UMD global) ---
 const SUPABASE_URL     = 'https://gmckatvstnuqewromxtd.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtY2thdHZzdG51cWV3cm9teHRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2MTc0MDUsImV4cCI6MjA2MzE5MzQwNX0.pzXtMwmO70ot8pgJSX9efTdx9rwU_drCoUTBo6dqGOA';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const { createClient } = supabase;                  // from the UMD bundle
+const supabaseClient   = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const eventsContainer = document.getElementById('events-container');
 const searchForm       = document.getElementById('search-form');
@@ -47,7 +48,7 @@ function renderEvents(events, city) {
     const btn = card.querySelector('.save-btn');
     btn.addEventListener('click', async () => {
       btn.disabled = true;
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('saved_events')
         .insert([{
           event_id: evt.id,

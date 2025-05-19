@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EventFinder | Stats</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- JS Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="stats.html">Stats</a>
+  </nav>
+
+  <header>
+    <h1>Event Volume by Date</h1>
+    <form id="stats-form">
+      <input type="text" id="stats-city" placeholder="Enter city…" required />
+      <button type="submit">Show Stats</button>
+    </form>
+  </header>
+
+  <main>
+    <canvas id="eventsChart"></canvas>
+  </main>
+
+  <script src="js/stats.js"></script>
+</body>
+</html>

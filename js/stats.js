@@ -1,4 +1,4 @@
-// js/stats.js
+
 document.addEventListener('DOMContentLoaded', () => {
   const API_KEY    = 'BO3LQawkhLaYBn2gG9Fvrg5EcYZ2RFmE';
   const statsForm  = document.getElementById('stats-form');

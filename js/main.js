@@ -1,31 +1,21 @@
 // js/main.js
+
 document.addEventListener('DOMContentLoaded', () => {
-  // === Ticketmaster ===
+  // --- Your existing Ticketmaster logic (unchanged) ---
   const API_KEY = 'BO3LQawkhLaYBn2gG9Fvrg5EcYZ2RFmE';
 
-  // === Optional Supabase (will only activate if window.supabase is present) ===
-  let supabaseClient = null;
-  if (window.supabase) {
-    const SUPABASE_URL     = 'https://gmckatvstnuqewromxtd.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…Bo6dqGOA';
-    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  async function fetchEventsByCity(city) {
+    const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}` +
+                `&city=${encodeURIComponent(city)}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    return data._embedded?.events || [];
   }
 
+  // Grab your DOM elements
   const eventsContainer = document.getElementById('events-container');
   const searchForm      = document.getElementById('search-form');
   const locateBtn       = document.getElementById('locate-btn');
-
-  async function fetchEventsByCity(city) {
-    const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&city=${encodeURIComponent(city)}`;
-    try {
-      const res  = await fetch(url);
-      const data = await res.json();
-      return data._embedded?.events || [];
-    } catch (err) {
-      console.error('Error fetching events:', err);
-      return [];
-    }
-  }
 
   function renderEvents(events, city) {
     eventsContainer.innerHTML = '';
@@ -33,6 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
       eventsContainer.textContent = 'No events found.';
       return;
     }
+
+    // 3) Initialize Supabase client *if* the UMD bundle loaded
+    const SUPABASE_URL     = 'https://gmckatvstnuqewromxtd.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtY2thdHZzdG51cWV3cm9teHRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2MTc0MDUsImV4cCI6MjA2MzE5MzQwNX0.pzXtMwmO70ot8pgJSX9efTdx9rwU_drCoUTBo6dqGOA';
+    const supabaseClient = window.supabase
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    console.log('supabaseClient:', supabaseClient);
 
     events.forEach(evt => {
       const card = document.createElement('div');
@@ -46,10 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ${supabaseClient ? '<button class="save-btn">Save</button>' : ''}
       `;
 
-      // Attach Save listener *only* if Supabase is configured
+      // Attach the Save handler only if supabaseClient exists
       if (supabaseClient) {
-        const btn = card.querySelector('.save-btn');
-        btn.addEventListener('click', async () => {
+        card.querySelector('.save-btn').addEventListener('click', async () => {
+          const btn = event.currentTarget;
           btn.disabled = true;
           const { error } = await supabaseClient
             .from('saved_events')
@@ -59,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
               date:     evt.dates.start.localDate,
               image:    evt.images[0]?.url,
               venue:    evt._embedded.venues[0]?.name,
-              city:     city
+              city
             }]);
           btn.textContent = error ? 'Error' : 'Saved';
         });
@@ -70,28 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // — Search by city —
-  if (searchForm) {
-    searchForm.addEventListener('submit', async e => {
-      e.preventDefault();
-      const city   = document.getElementById('city-input').value.trim();
-      const events = await fetchEventsByCity(city);
-      renderEvents(events, city);
-    });
-  }
+  searchForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const city   = document.getElementById('city-input').value.trim();
+    const events = await fetchEventsByCity(city);
+    renderEvents(events, city);
+  });
 
-  // — Locate Me (by coords) —
-  if (locateBtn) {
-    locateBtn.addEventListener('click', () => {
-      if (!navigator.geolocation) {
-        return alert('Geolocation not supported.');
-      }
-      navigator.geolocation.getCurrentPosition(async pos => {
-        const { latitude, longitude } = pos.coords;
-        const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&latlong=${latitude},${longitude}`;
-        const res    = await fetch(url);
-        const data   = await res.json();
-        renderEvents(data._embedded?.events || [], `${latitude},${longitude}`);
-      });
+  // — Locate Me —
+  locateBtn.addEventListener('click', () => {
+    if (!navigator.geolocation) return alert('Geolocation not supported.');
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const { latitude, longitude } = pos.coords;
+      const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}` +
+                  `&latlong=${latitude},${longitude}`;
+      const res    = await fetch(url);
+      const data   = await res.json();
+      renderEvents(data._embedded?.events || [], `${latitude},${longitude}`);
     });
-  }
+  });
 });

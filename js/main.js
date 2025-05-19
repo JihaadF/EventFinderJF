@@ -33,29 +33,24 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class="save-btn">Save</button>
       `;
 
-      // FIXED: capture event parameter 'e' here
-      card.querySelector('.save-btn').addEventListener('click', async (e) => {
-        const btn = e.currentTarget;
+      card.querySelector('.save-btn').addEventListener('click', async () => {
+        const btn = event.currentTarget;
         btn.disabled = true;
-        try {
-          const resp = await fetch('/api/save-event', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({
-              event_id: evt.id,
-              name:     evt.name,
-              date:     evt.dates.start.localDate,
-              image:    evt.images[0]?.url,
-              venue:    evt._embedded.venues[0]?.name,
-              city
-            })
-          });
-          if (!resp.ok) throw new Error(await resp.text());
-          btn.textContent = 'Saved';
-        } catch (err) {
-          console.error('Save failed:', err);
-          btn.textContent = 'Error';
-        }
+        const payload = {
+          event_id: evt.id,
+          name:     evt.name,
+          date:     evt.dates.start.localDate,
+          image:    evt.images[0]?.url,
+          venue:    evt._embedded.venues[0]?.name,
+          city
+        };
+        const resp = await fetch('/api/save-event', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+        const result = await resp.json();
+        btn.textContent = resp.ok ? 'Saved' : 'Error';
       });
 
       eventsContainer.appendChild(card);
@@ -72,11 +67,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 2) Geolocation
   locateBtn.addEventListener('click', () => {
-    if (!navigator.geolocation) return alert('Geolocation not supported.');
+    if (!navigator.geolocation) {
+      return alert('Geolocation not supported.');
+    }
     navigator.geolocation.getCurrentPosition(async pos => {
       const { latitude, longitude } = pos.coords;
-      const events = await fetchEventsByCity(`${latitude},${longitude}`);
-      renderEvents(events, `${latitude},${longitude}`);
+      const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}` +
+                  `&latlong=${latitude},${longitude}`;
+      const res    = await fetch(url);
+      const data   = await res.json();
+      renderEvents(data._embedded?.events || [], `${latitude},${longitude}`);
     });
   });
 });

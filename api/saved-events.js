@@ -1,4 +1,4 @@
-// /api/saved-events.js
+// api/saved-events.js
 
 import { createClient } from '@supabase/supabase-js';
 

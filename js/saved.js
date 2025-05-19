@@ -1,25 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>EventFinder | Saved Events</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <!-- Supabase client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="saved.html">Saved Events</a>
-  </nav>
+// js/saved.js
 
-  <header>
-    <h1>Your Saved Events</h1>
-  </header>
-  <main id="saved-container"></main>
+// Supabase setup (UMD global)
+const SUPABASE_URL     = 'https://gmckatvstnuqewromxtd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtY2thdHZzdG51cWV3cm9teHRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2MTc0MDUsImV4cCI6MjA2MzE5MzQwNX0.pzXtMwmO70ot8pgJSX9efTdx9rwU_drCoUTBo6dqGOA';
+const { createClient } = supabase;
+const supabaseClient   = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  <script src="js/saved.js"></script>
-</body>
-</html>
+const container = document.getElementById('saved-container');
+
+async function loadSaved() {
+  const { data, error } = await supabaseClient
+    .from('saved_events')
+    .select('*')
+    .order('id', { ascending: false });
+
+  if (error) {
+    container.textContent = 'Error loading saved events.';
+    console.error(error);
+    return;
+  }
+
+  if (!data.length) {
+    container.textContent = 'No events saved yet.';
+    return;
+  }
+
+  container.innerHTML = '';
+  data.forEach(evt => {
+    const card = document.createElement('div');
+    card.className = 'event-card';
+    card.innerHTML = `
+      <img src="${evt.image}" alt="${evt.name}" />
+      <h2>${evt.name}</h2>
+      <p>${evt.date}</p>
+      <p>${evt.venue}, ${evt.city}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+
+loadSaved();

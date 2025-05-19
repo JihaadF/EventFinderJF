@@ -6,7 +6,7 @@
   <title>EventFinder | Home</title>
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!--  Supabase UMD bundle (must come before main.js)  -->
+  <!-- Load Supabase UMD FIRST so window.supabase exists -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/umd/index.min.js"></script>
 </head>
 <body>
@@ -26,10 +26,9 @@
     </form>
   </header>
 
-  <main id="events-container">
-    <!-- JS will inject event cards here -->
-  </main>
+  <main id="events-container"></main>
 
+  <!-- Your script runs *after* Supabase is guaranteed on window -->
   <script src="js/main.js"></script>
 </body>
 </html>

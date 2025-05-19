@@ -1,6 +1,6 @@
 /* Reset & Base */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.5; }
+body { font-family: Arial, sans-serif; padding: 20px; }
 
 /* Navigation */
 nav { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
@@ -10,9 +10,8 @@ nav a:hover { color: #0070f3; }
 /* Header */
 header { margin-bottom: 1.5rem; }
 
-/* Grid for event cards */
-#events-container,
-#saved-container {
+/* Events grid */
+#events-container {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -38,24 +37,18 @@ header { margin-bottom: 1.5rem; }
 .event-card p {
   margin: 0.25rem 0.5rem;
 }
-.event-card a,
-.event-card button {
+.event-card a {
   margin: 0.5rem;
-  padding: 0.5rem;
-  text-align: center;
-}
-.event-card button {
-  background: #0070f3;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-.event-card button:disabled {
-  background: #999;
-  cursor: default;
+  color: #0070f3;
+  text-decoration: none;
 }
 
 /* Form */
 form { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-form input,
-form button { padding: 0.5rem; font-size: 1rem; }
+form input, form button { padding: 0.5rem; font-size: 1rem; }
+
+/* Stats canvas */
+#eventsChart {
+  max-width: 800px;
+  margin: 0 auto;
+}

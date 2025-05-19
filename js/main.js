@@ -1,4 +1,4 @@
-// js/main.js
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const API_KEY = 'BO3LQawkhLaYBn2gG9Fvrg5EcYZ2RFmE';
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 2) Locate Me (correct latlong endpoint)
+  // 2) Locate Me 
   locateBtn.addEventListener('click', () => {
     if (!navigator.geolocation) {
       return alert('Geolocation not supported.');

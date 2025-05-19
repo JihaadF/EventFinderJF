@@ -1,18 +1,50 @@
 // js/main.js
+
 document.addEventListener('DOMContentLoaded', () => {
   const API_KEY = 'BO3LQawkhLaYBn2gG9Fvrg5EcYZ2RFmE';
   const eventsContainer = document.getElementById('events-container');
   const searchForm      = document.getElementById('search-form');
   const locateBtn       = document.getElementById('locate-btn');
 
-  async function fetchEventsByCity(city) {
-    const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}` +
-                `&city=${encodeURIComponent(city)}`;
-    const res  = await fetch(url);
-    const data = await res.json();
-    return data._embedded?.events || [];
-  }
+  // 1) Search by city
+  searchForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const city   = document.getElementById('city-input').value.trim();
+    const url    = `https://app.ticketmaster.com/discovery/v2/events.json` +
+                   `?apikey=${API_KEY}` +
+                   `&city=${encodeURIComponent(city)}`;
+    try {
+      const res  = await fetch(url);
+      const data = await res.json();
+      renderEvents(data._embedded?.events || []);
+    } catch (err) {
+      console.error('Search fetch failed:', err);
+      eventsContainer.textContent = 'Failed to load events.';
+    }
+  });
 
+  // 2) Locate Me (correct latlong endpoint)
+  locateBtn.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      return alert('Geolocation not supported.');
+    }
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const { latitude, longitude } = pos.coords;
+      const url = `https://app.ticketmaster.com/discovery/v2/events.json` +
+                  `?apikey=${API_KEY}` +
+                  `&latlong=${latitude},${longitude}`;
+      try {
+        const res  = await fetch(url);
+        const data = await res.json();
+        renderEvents(data._embedded?.events || []);
+      } catch (err) {
+        console.error('Geo fetch failed:', err);
+        eventsContainer.textContent = 'Failed to load nearby events.';
+      }
+    });
+  });
+
+  // Render helper
   function renderEvents(events) {
     eventsContainer.innerHTML = '';
     if (!events.length) {
@@ -32,21 +64,4 @@ document.addEventListener('DOMContentLoaded', () => {
       eventsContainer.appendChild(card);
     });
   }
-
-  // 1) City search
-  searchForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const city   = document.getElementById('city-input').value.trim();
-    renderEvents(await fetchEventsByCity(city));
-  });
-
-  // 2) Geolocation
-  locateBtn.addEventListener('click', () => {
-    if (!navigator.geolocation) return alert('Geolocation not supported.');
-    navigator.geolocation.getCurrentPosition(async pos => {
-      const { latitude, longitude } = pos.coords;
-      const cityParam = `${latitude},${longitude}`;
-      renderEvents(await fetchEventsByCity(cityParam));
-    });
-  });
 });

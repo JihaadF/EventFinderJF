@@ -1,5 +1,3 @@
-
-
 // js/main.js
 
 // *** Your Ticketmaster key ***
@@ -7,13 +5,15 @@ const API_KEY = 'BO3LQawkhLaYBn2gG9Fvrg5EcYZ2RFmE';
 
 // --- Supabase setup (using UMD global) ---
 const SUPABASE_URL     = 'https://gmckatvstnuqewromxtd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtY2thdHZzdG51cWV3cm9teHRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2MTc0MDUsImV4cCI6MjA2MzE5MzQwNX0.pzXtMwmO70ot8pgJSX9efTdx9rwU_drCoUTBo6dqGOA';
-const { createClient } = supabase;                  // from the UMD bundle
-const supabaseClient   = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.…Bo6dqGOA';
+const supabaseClient   = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 const eventsContainer = document.getElementById('events-container');
-const searchForm       = document.getElementById('search-form');
-const locateBtn        = document.getElementById('locate-btn');
+const searchForm      = document.getElementById('search-form');
+const locateBtn       = document.getElementById('locate-btn');
 
 async function fetchEventsByCity(city) {
   const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&city=${encodeURIComponent(city)}`;
@@ -99,3 +99,4 @@ if (locateBtn) {
     });
   });
 }
+

@@ -1,16 +1,7 @@
 // js/main.js
 
 document.addEventListener('DOMContentLoaded', () => {
-  // --- Ticketmaster setup ---
   const API_KEY = 'BO3LQawkhLaYBn2gG9Fvrg5EcYZ2RFmE';
-
-  // --- Supabase setup ---
-  const SUPABASE_URL     = 'https://gmckatvstnuqewromxtd.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtY2thdHZzdG51cWV3cm9teHRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2MTc0MDUsImV4cCI6MjA2MzE5MzQwNX0.pzXtMwmO70ot8pgJSX9efTdx9rwU_drCoUTBo6dqGOA';
-  const supabaseClient   = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  console.log('Supabase client:', supabaseClient);
-
   const eventsContainer = document.getElementById('events-container');
   const searchForm      = document.getElementById('search-form');
   const locateBtn       = document.getElementById('locate-btn');
@@ -42,27 +33,31 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class="save-btn">Save</button>
       `;
 
-      const btn = card.querySelector('.save-btn');
-      btn.addEventListener('click', async () => {
+      card.querySelector('.save-btn').addEventListener('click', async () => {
+        const btn = event.currentTarget;
         btn.disabled = true;
-        const { error } = await supabaseClient
-          .from('saved_events')
-          .insert([{
-            event_id: evt.id,
-            name:     evt.name,
-            date:     evt.dates.start.localDate,
-            image:    evt.images[0]?.url,
-            venue:    evt._embedded.venues[0]?.name,
-            city
-          }]);
-        btn.textContent = error ? 'Error' : 'Saved';
+        const payload = {
+          event_id: evt.id,
+          name:     evt.name,
+          date:     evt.dates.start.localDate,
+          image:    evt.images[0]?.url,
+          venue:    evt._embedded.venues[0]?.name,
+          city
+        };
+        const resp = await fetch('/api/save-event', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+        const result = await resp.json();
+        btn.textContent = resp.ok ? 'Saved' : 'Error';
       });
 
       eventsContainer.appendChild(card);
     });
   }
 
-  // Search by city
+  // 1) City Search
   searchForm.addEventListener('submit', async e => {
     e.preventDefault();
     const city   = document.getElementById('city-input').value.trim();
@@ -70,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderEvents(events, city);
   });
 
-  // Locate Me
+  // 2) Geolocation
   locateBtn.addEventListener('click', () => {
     if (!navigator.geolocation) {
       return alert('Geolocation not supported.');

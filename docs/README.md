@@ -8,7 +8,6 @@ EventFinder is a simple web app that lets you search Ticketmaster for local even
 - **Mobile:** iOS Safari (v14+), Android Chrome (v86+)
 
 **Developer Manual:**  
-[docs/DeveloperManual.md](./docs/DeveloperManual.md)
 
 ---
 1. **Clone the repo**  
@@ -17,7 +16,6 @@ EventFinder is a simple web app that lets you search Ticketmaster for local even
    cd Final-Project377
 python3 -m http.server 8000
 # then browse to http://localhost:8000/index.html
-**to use geoloxation**
 
 Geolocation prompts may fail silently if the user denies permission.
 

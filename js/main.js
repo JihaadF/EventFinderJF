@@ -1,7 +1,6 @@
-// js/main.js
 
-// *** Replace with your actual Ticketmaster key ***
-const API_KEY = 'YOUR_TICKETMASTER_KEY';
+
+const API_KEY = 'BO3LQawkhLaYBn2gG9Fvrg5EcYZ2RFmE';
 
 const eventsContainer = document.getElementById('events-container');
 const searchForm = document.getElementById('search-form');

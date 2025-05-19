@@ -5,13 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>EventFinder | Home</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <nav>
     <a href="index.html">Home</a>
     <a href="about.html">About</a>
-    <a href="events.html">Search</a>
+    <a href="saved.html">Saved Events</a>
   </nav>
+
   <header>
     <h1>Discover Local Events</h1>
     <form id="search-form">
@@ -20,7 +23,11 @@
       <button type="button" id="locate-btn">Locate Me</button>
     </form>
   </header>
-  <main id="events-container"></main>
+
+  <main id="events-container">
+    <!-- JS will inject event cards here -->
+  </main>
+
   <script src="js/main.js"></script>
 </body>
 </html>

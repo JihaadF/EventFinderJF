@@ -6,15 +6,14 @@
   <title>EventFinder | Home</title>
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- Load Supabase UMD FIRST so window.supabase exists -->
+  <!-- 1) Load Supabase UMD bundle FIRST -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/umd/index.min.js"></script>
 </head>
 <body>
   <nav>
     <a href="index.html">Home</a>
     <a href="about.html">About</a>
-    <a href="events.html">Search</a>
-    <a href="saved.html">Saved</a>
+    <a href="saved.html">Saved Events</a>
   </nav>
 
   <header>
@@ -28,7 +27,7 @@
 
   <main id="events-container"></main>
 
-  <!-- Your script runs *after* Supabase is guaranteed on window -->
+  <!-- 2) Then your script -->
   <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-# FinalProject377
+
 # EventFinder – Local Events Explorer
 
 EventFinder is a simple web app that lets you search Ticketmaster for local events, use your browser’s geolocation to find nearby shows, and visualize event trends.
